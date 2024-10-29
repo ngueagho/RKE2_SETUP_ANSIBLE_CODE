@@ -1,0 +1,13 @@
+---
+# tasks file for externaldns
+- name: Créer un service account pour ExternalDNS
+  kubernetes.core.k8s:
+    state: present
+    namespace: kube-system
+    definition: "{{ lookup('template', 'external-dns-deployment.yml.j2') }}"
+
+- name: Déployer ExternalDNS dans le cluster
+  kubernetes.core.k8s:
+    state: present
+    namespace: kube-system
+    definition: "{{ lookup('template', 'external-dns-deployment.yml.j2') }}"

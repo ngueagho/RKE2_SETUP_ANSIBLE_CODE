@@ -1,0 +1,6 @@
+---
+# defaults file for externaldns
+external_dns_version: "0.10.1"
+external_dns_provider: "cloudflare"
+dns_zone: "simpleachat.com       # Zone DNS gérée par ExternalDNS
+
