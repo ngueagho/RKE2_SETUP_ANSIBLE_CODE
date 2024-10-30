@@ -1,6 +1,7 @@
 ---
-# defaults file for externaldns
-external_dns_version: "0.10.1"
-external_dns_provider: "cloudflare"
-dns_zone: "simpleachat.com       # Zone DNS gérée par ExternalDNS
-
+externaldns_image: "k8s.gcr.io/external-dns/external-dns:v0.10.2"
+externaldns_provider: "cloudflare"  # Utiliser Cloudflare comme fournisseur DNS
+externaldns_domain_filters: ["example.com"]  # Domaine géré par ExternalDNS
+externaldns_policy: "sync"
+externaldns_interval: "1m"  # Fréquence de mise à jour
+cloudflare_api_token: "<TON_API_TOKEN_CLOUDFLARE>"  # Token d'API Cloudflare
