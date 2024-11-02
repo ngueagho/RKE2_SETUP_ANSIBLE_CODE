@@ -1,0 +1,30 @@
+---
+# tasks file for unistall_all
+- name: unistall rke2
+  package:
+    name: rke2
+    state: absent
+
+- name: unistall rancher
+  package:
+    name: rancher
+    state: absent
+    force: yes
+    ignore_errors: yes
+
+- name: unistall rancher-agent
+  package:
+    name: rancher-agent
+    state: absent
+    force: yes
+    ignore_errors: yes
+
+- name: unistall rancher-server
+  package:
+    name: rancher-server
+    state: absent
+    force: yes
+    ignore_errors: yes
+
+- name: unistall script 
+  command: "sudo sh /usr/local/bin/rke2-uninstall.sh"

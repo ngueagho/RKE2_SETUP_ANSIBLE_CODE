@@ -1,0 +1,3 @@
+---
+# vars file for rke2_installation
+rke2_url: "https://get.rke2.io"
