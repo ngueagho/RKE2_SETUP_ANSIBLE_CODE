@@ -6,5 +6,6 @@
   roles:
     # - rke2_installation
     # - rke2_node_installation
-    - nginx-ingress-controler
+    # - nginx-ingress-controler
+    - external-dns
 
