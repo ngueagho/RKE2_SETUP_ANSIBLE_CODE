@@ -1,0 +1,32 @@
+---
+# tasks file for rke2_installation
+
+- name: Mettre à jour les paquets
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600  
+
+
+- name: Set up RKE2
+  shell: |
+    curl -fsSL {{ rke2_url }} | sh -
+
+- name: enable rke2-server.service
+  systemctl:
+    name: rke2-server.service
+    enabled: yes
+    state: enable
+
+- name: start rke2-agent.service
+  systemctl:
+    name: rke2-agent.service
+    enabled: yes
+    state: started
+
+
+- name: Set up RKE2 worker agent 
+  shell: |
+    curl -sfL {{ rke2_url }} | INSTALL_RKE2_TYPE="agent" sh -
+
+
+
