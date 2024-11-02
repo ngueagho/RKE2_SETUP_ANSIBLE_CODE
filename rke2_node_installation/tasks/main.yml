@@ -1,2 +1,7 @@
 ---
 # tasks file for rke2_node_installation
+- name: Mettre à jour les paquets
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600  
+

@@ -11,22 +11,20 @@
   shell: |
     curl -fsSL {{ rke2_url }} | sh -
 
+
 - name: enable rke2-server.service
   systemctl:
     name: rke2-server.service
     enabled: yes
     state: enable
 
-- name: start rke2-agent.service
+
+
+- name: start rke2-server.service
   systemctl:
-    name: rke2-agent.service
+    name: rke2-server.service
     enabled: yes
     state: started
-
-
-- name: Set up RKE2 worker agent 
-  shell: |
-    curl -sfL {{ rke2_url }} | INSTALL_RKE2_TYPE="agent" sh -
 
 
 
