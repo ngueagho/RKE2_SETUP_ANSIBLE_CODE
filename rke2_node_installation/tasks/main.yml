@@ -5,3 +5,101 @@
     update_cache: yes
     cache_valid_time: 3600  
 
+# installation de l'agent rke2
+- name: rke2-agent installation
+  become: true
+  shell: | 
+    curl -sfL {{ rke2_agent_url }}  | INSTALL_RKE2_TYPE="agent" sh -
+
+
+# start the agent
+- name: start the argent service 
+  systemd: 
+    name: rke2-agent.service
+    enabled: yes
+    state: started
+
+# - name: enable the argent service 
+#   systemd: 
+#     name: rke2-agent.service
+#     enabled: yes
+#     state: enable
+
+
+# creation du dossier pour le fichier de configuration 
+- name: Create a directory /etc/rancher/rke2/
+  ansible.builtin.file:
+    path: /etc/rancher/rke2/
+    state: directory
+
+
+
+# recuperation du fichier config pour la liaison  des differents neuds 
+- name: Récupération du fichier config.yaml
+  # become: true
+  template:
+    src: /home/theking/Documents/worketyamo/RKE2_SETUP_ANSIBLE_CODE/rke2_node_installation/templates/config.yaml.j2
+    dest: /etc/rancher/rke2/config.yaml
+
+
+
+
+# creation du dossier .kube
+- name: Create a directory .kube
+  ansible.builtin.file:
+    path: /home/admin/.kube/
+    state: directory
+
+
+# # creation du fichier config de  .kube
+# - name: Creation du fichier config
+#   ansible.builtin.file:
+#     path: /home/admin/.kube/config
+#     state: touch
+
+
+
+# copy the config file 
+- name: copy the pas configfile in to .kube directory
+  become: true
+  copy:
+    remote_src: true 
+    src: /etc/rancher/rke2/rke2.yaml  
+    dest: "/home/admin/.kube/config"  
+    owner: "admin" 
+    group: "admin"  
+
+
+# change the owner of this file 
+- name: Changer le propriétaire du fichier de configuration Kubernetes
+  file:
+    path: "~/.kube/config"  
+    owner: "admin"                   
+    group: "admin"         
+
+
+
+# specify the KUBECONFIG path to the .bashrc
+- name: Spécifier le chemin KUBECONFIG dans .bashrc
+  become: true
+  lineinfile:
+    path: /home/admin/.bashrc          
+    line: "export KUBECONFIG=/home/admin/.kube/config" 
+    state: present                  
+
+
+    
+# start rke2 service
+- name: reload  rke2-server.service
+  systemd:
+    name: rke2-server.service
+    enabled: yes
+    state: restarted
+
+# start rke2 service
+- name: reload and  rke2-server.service
+  systemd:
+    name: rke2-agent.service
+    enabled: yes
+    state: restarted
+
