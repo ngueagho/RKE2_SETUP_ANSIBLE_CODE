@@ -1,2 +1,430 @@
----
-# tasks file for external-dns
+# - name: Créer le ServiceAccount external-dns
+#   kubernetes.core.k8s:
+#     api_version: v1
+#     kind: ServiceAccount
+#     name: external-dns
+#     namespace: kube-system
+#     state: present
+
+
+
+# - name: Créer le ClusterRole external-dns
+#   community.kubernetes.k8s:
+#     state: present
+#     definition:
+#       apiVersion: rbac.authorization.k8s.io/v1
+#       kind: ClusterRole
+#       metadata:
+#         name: external-dns
+#       rules:
+#         - apiGroups: [""]
+#           resources: ["services", "endpoints", "pods"]
+#           verbs: ["get", "watch", "list"]
+#         - apiGroups: ["extensions", "networking.k8s.io"]
+#           resources: ["ingresses"]
+#           verbs: ["get", "watch", "list"]
+#     kubeconfig: /home/admin/.kube/config
+
+# - name: Créer le ClusterRoleBinding external-dns
+#   community.kubernetes.k8s:
+#     state: present
+#     definition:
+#       apiVersion: rbac.authorization.k8s.io/v1
+#       kind: ClusterRoleBinding
+#       metadata:
+#         name: external-dns
+#       roleRef:
+#         apiGroup: rbac.authorization.k8s.io
+#         kind: ClusterRole
+#         name: external-dns
+#       subjects:
+#         - kind: ServiceAccount
+#           name: external-dns
+#           namespace: kube-system
+
+# # Ajouter le dépôt Helm Bitnami
+# - name: Ajouter le dépôt Helm Bitnami
+#   community.kubernetes.helm_repository:
+#     name: bitnami
+#     repo_url: https://charts.bitnami.com/bitnami
+#     state: present
+
+# # Mettre à jour les dépôts Helm
+# - name: Mettre à jour les dépôts Helm
+#   ansible.builtin.command:
+#     cmd: helm repo update
+
+# # Installer le chart Helm external-dns
+# - name: Installer le chart Helm external-dns
+#   community.kubernetes.helm:
+#     name: external-dns
+#     chart_ref: bitnami/external-dns
+#     release_namespace: kube-system
+#     values:
+#       provider: "cloudflare"
+#       cloudflare:
+#         apiKey: "xJZNRoATeMvnmOq5Y4q8OqlkK8r5B92WOZVSvukW"  # Remplace par ta clé Cloudflare
+#         email: "ngueaghotiodongrobertolandry@gmail.com"      # Remplace par ton email Cloudflare
+#       domainFilters:
+#         - "simpleachat.com"                  # Remplace par ton domaine
+#       serviceAccount:
+#         create: false
+#         name: external-dns
+#       policy: "upsert-only"
+#       txtOwnerId: "external-dns-prod-tp"
+#     state: present
+
+# - name: Apply Cert-Manager CRDs
+#   community.kubernetes.k8s:
+#     src: https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.crds.yaml
+#     state: present
+#     kubeconfig: /home/admin/.kube/config
+
+# - name: Create ClusterIssuer
+#   community.kubernetes.k8s:
+#     state: present
+#     definition:
+#       apiVersion: cert-manager.io/v1
+#       kind: ClusterIssuer
+#       metadata:
+#         name: letsencrypt-prod
+#       spec:
+#         acme:
+#           server: https://acme-v02.api.letsencrypt.org/directory
+#           email: ngueaghotiodongrobertolandry@gmail.com
+#           privateKeySecretRef:
+#             name: letsencrypt-prod
+#           solvers:
+#             - http01:
+#                 ingress:
+#                   class: nginx
+
+# # Créer un Deployment pour test-app
+# - name: Créer un Deployment pour test-app
+#   community.kubernetes.k8s:
+#     state: present
+#     definition:
+#       apiVersion: apps/v1
+#       kind: Deployment
+#       metadata:
+#         name: test-deployment
+#         namespace: default  # Remplace par le namespace souhaité si nécessaire
+#       spec:
+#         replicas: 1
+#         selector:
+#           matchLabels:
+#             app: test-app
+#         template:
+#           metadata:
+#             labels:
+#               app: test-app
+#           spec:
+#             containers:
+#             - name: test-container
+#               image: nginx  # Image de base pour tester
+#               ports:
+#               - containerPort: 80
+
+# # Configurer un Service de type ClusterIP pour test-app
+# - name: Configurer un Service de type ClusterIP pour test-app
+#   community.kubernetes.k8s:
+#     state: present
+#     definition:
+#       apiVersion: v1
+#       kind: Service
+#       metadata:
+#         name: test-service
+#         namespace: default  # Remplace par le namespace souhaité si nécessaire
+#         annotations:
+#           external-dns.alpha.kubernetes.io/hostname: "test.simpleachat.com"  # Spécifie le nom d'hôte
+#           external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"  # Active le proxy Cloudflare (facultatif)
+#       spec:
+#         selector:
+#           app: test-app
+#         ports:
+#           - protocol: TCP
+#             port: 80
+#             targetPort: 80
+#         type: ClusterIP
+
+# # Configurer l'Ingress pour test.simpleachat.com
+# - name: Configurer l'Ingress pour test.simpleachat.com
+#   community.kubernetes.k8s:
+#     state: present
+#     definition:
+#       apiVersion: networking.k8s.io/v1
+#       kind: Ingress
+#       metadata:
+#         name: test-ingress
+#         namespace: default  # Remplace par ton namespace si besoin
+#         annotations:
+#           external-dns.alpha.kubernetes.io/hostname: "test.simpleachat.com"
+#           external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"  # Active le proxy Cloudflare (facultatif)
+#       spec:
+#         rules:
+#         - host: "test.simpleachat.com"
+#           http:
+#             paths:
+#             - path: /
+#               pathType: Prefix
+#               backend:
+#                 service:
+#                   name: test-service  # Nom du service cible
+#                   port:
+#                     number: 80
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# - name: Mettre à jour les paquets
+#   apt:
+#     update_cache: yes
+#     cache_valid_time: 3600  
+
+
+# - name: Télécharger le script d'installation de Helm
+#   ansible.builtin.get_url:
+#     url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+#     dest: /tmp/get_helm.sh
+#     mode: '0755'
+
+# - name: Exécuter le script pour installer Helm
+#   ansible.builtin.command: /tmp/get_helm.sh
+#   args:
+#     creates: /usr/local/bin/helm
+
+
+
+
+# # Ajouter le dépôt Helm ingress-nginx
+# - name: Ajouter le dépôt Helm ingress-nginx
+#   community.kubernetes.helm_repository:
+#     name: ingress-nginx
+#     repo_url: https://kubernetes.github.io/ingress-nginx
+#     state: present
+
+# # Mettre à jour les dépôts Helm
+# - name: Mettre à jour les dépôts Helm
+#   community.kubernetes.helm_repository:
+#     name: ingress-nginx
+#     repo_url: https://kubernetes.github.io/ingress-nginx
+#     force_update: true
+
+# - name: python pip innstallation
+#   apt:
+#     name: pip 
+#     state: present 
+
+# - name: Installer la bibliothèque Python kubernetes
+#   ansible.builtin.pip:
+#     name: kubernetes
+#     state: present
+#   when: ansible_python_interpreter is defined
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Add Bitnami Helm repository
+  community.kubernetes.helm_repository:
+    name: bitnami
+    url: https://charts.bitnami.com/bitnami
+    state: present
+
+
+- name: Add Bitnami Helm repository and Update Helm repositories
+  shell: |
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+    helm repo update
+
+
+
+- name: copy value file 
+  ansible.builtin.copy:
+    src: values.yaml
+    dest: /root/external-dns-values.yaml
+    mode: 0644
+
+- name: Install External DNS and delete the file
+  shell: |
+    helm install external-dns bitnami/external-dns --namespace default -f /root/external-dns-values.yaml
+    rm /root/external-dns-values.yaml
+
+
+# - name: Install External DNS
+#   community.kubernetes.helm:
+#     name: external-dns
+#     chart_ref: bitnami/external-dns  # Use chart_ref instead of chart
+#     namespace: default  # Change this if necessary
+#     values:
+#       provider: cloudflare
+#       cloudflare:
+#         apiToken: "xJZNRoATeMvnmOq5Y4q8OqlkK8r5B92WOZVSvukW"
+#       domainFilters:
+#         - "simpleachat.com"
+#       service:
+#         type: ClusterIP
+#         annotations:
+#           cloudflare.com/enabled: "true"
+
+
+
+
+
+
+
+# - name: Ensure the Kubernetes service exists
+#   community.kubernetes.k8s:
+#     kubeconfig: /home/admin/.kube/config
+#     name: my-service
+#     namespace: default  # Changez le namespace si nécessaire
+#     api_version: v1
+#     kind: Service
+#     state: present
+#     definition:
+#       apiVersion: v1
+#       kind: Service
+#       metadata:
+#         name: my-service
+#         annotations:
+#           external-dns.alpha.kubernetes.io/hostname: "mysubdomain.simpleachat.com"
+#       spec:
+#         type: LoadBalancer
+#         ports:
+#           - port: 80
+#         selector:
+#           app: my-app
+
+
+
+
+
+
+- name: Deploy Nginx
+  k8s:
+    kubeconfig: /home/admin/.kube/config
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: nginx-deployment
+        namespace: default
+      spec:
+        replicas: 2
+        selector:
+          matchLabels:
+            app: nginx
+        template:
+          metadata:
+            labels:
+              app: nginx
+          spec:
+            containers:
+            - name: nginx
+              image: nginx:latest
+              ports:
+              - containerPort: 80
+
+
+
+
+- name: Create Nginx Service
+  k8s:
+    kubeconfig: /home/admin/.kube/config
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: nginx-service
+        namespace: default
+      spec:
+        selector:
+          app: nginx
+        ports:
+          - protocol: TCP
+            port: 80
+            targetPort: 80
+        type: ClusterIP
+
+
+- name: Create Nginx Ingress
+  k8s:
+    kubeconfig: /home/admin/.kube/config
+    state: present
+    definition:
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: nginx-ingress
+        namespace: default
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: "sous-domaine.simpleachat.com"
+      spec:
+        rules:
+        - host: sous-domaine.simpleachat.com
+          http:
+            paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: nginx-service
+                  port:
+                    number: 80
+
+
