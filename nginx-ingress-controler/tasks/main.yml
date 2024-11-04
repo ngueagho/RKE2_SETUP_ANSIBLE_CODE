@@ -1,2 +1,64 @@
 ---
 # tasks file for nginx-ingress-controler
+- name: Mettre à jour les paquets
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600  
+
+
+- name: Télécharger le script d'installation de Helm
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: /tmp/get_helm.sh
+    mode: '0755'
+
+- name: Exécuter le script pour installer Helm
+  ansible.builtin.command: /tmp/get_helm.sh
+  args:
+    creates: /usr/local/bin/helm
+
+
+
+
+# Ajouter le dépôt Helm ingress-nginx
+- name: Ajouter le dépôt Helm ingress-nginx
+  community.kubernetes.helm_repository:
+    name: ingress-nginx
+    repo_url: https://kubernetes.github.io/ingress-nginx
+    state: present
+
+# Mettre à jour les dépôts Helm
+- name: Mettre à jour les dépôts Helm
+  community.kubernetes.helm_repository:
+    name: ingress-nginx
+    repo_url: https://kubernetes.github.io/ingress-nginx
+    force_update: true
+
+- name: python pip innstallation
+  apt:
+    name: pip 
+    state: present 
+
+- name: Installer la bibliothèque Python kubernetes
+  ansible.builtin.pip:
+    name: kubernetes
+    state: present
+  when: ansible_python_interpreter is defined
+
+
+
+# Créer l'espace de noms ingress-nginx
+- name: Créer l'espace de noms ingress-nginx
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: ingress-nginx
+    state: present
+
+#  Installer nginx-ingress dans l'espace de noms ingress-nginx
+- name: Installer nginx-ingress dans l'espace de noms ingress-nginx
+  community.kubernetes.helm:
+    name: nginx-ingress
+    chart_ref: ingress-nginx/ingress-nginx
+    release_namespace: ingress-nginx
+    state: present

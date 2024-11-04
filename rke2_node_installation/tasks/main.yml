@@ -12,12 +12,12 @@
     curl -sfL {{ rke2_agent_url }}  | INSTALL_RKE2_TYPE="agent" sh -
 
 
-# start the agent
-- name: start the argent service 
-  systemd: 
-    name: rke2-agent.service
-    enabled: yes
-    state: started
+# # start the agent
+# - name: start the argent service 
+#   systemd: 
+#     name: rke2-agent.service
+#     enabled: yes
+#     state: started
 
 # - name: enable the argent service 
 #   systemd: 
@@ -73,7 +73,7 @@
 # change the owner of this file 
 - name: Changer le propriétaire du fichier de configuration Kubernetes
   file:
-    path: "~/.kube/config"  
+    path: "/home/admin/.kube/config"  
     owner: "admin"                   
     group: "admin"         
 

@@ -1,0 +1,9 @@
+provider: cloudflare
+cloudflare:
+  apiToken: "xJZNRoATeMvnmOq5Y4q8OqlkK8r5B92WOZVSvukW"
+domainFilters:
+  - "simpleachat.com"
+service:
+  type: ClusterIP
+  annotations:
+    cloudflare.com/enabled: "true"
