@@ -1,0 +1,55 @@
+---
+# tasks file for rke2_installation
+
+- name: Mettre à jour les paquets
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600  
+
+
+# installation de snapd 
+- name: Installer snapd
+  apt:
+    name: snapd
+    state: present
+
+# innstallation de kubectl 
+- name: kubect installation
+  snap:
+    name: kubectl
+    state: present
+    classic: true
+
+# installation de rke2
+- name: Set up RKE2
+  become: true
+  shell: |
+    curl -fsSL {{ rke2_url }} | sh -
+
+# start rke2 service
+- name: enable and start rke2-server.service
+  systemd:
+    name: rke2-server.service
+    enabled: yes
+    state: started
+
+
+# modifier le token et creation du fichier de template pour la connection des neuds 
+- name: Modifier le fichier de "token"
+  become: true
+  shell: |
+    token_value=$(cat /var/lib/rancher/rke2/server/token)
+    echo "token: $token_value" > /var/lib/rancher/rke2/server/token_new
+    echo 'server: https://38.242.155.134:9345' >> /var/lib/rancher/rke2/server/token_new
+
+
+# get token 
+- name: Récupérer le token pour la connection des neuds depuis le serveur et le stocker en local
+  fetch:
+    src: /var/lib/rancher/rke2/server/token_new
+    dest: /home/theking/Documents/worketyamo/RKE2_SETUP_ANSIBLE_CODE/rke2_node_installation/templates/config.yaml.j2
+    flat: yes
+
+
+
+

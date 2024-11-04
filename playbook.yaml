@@ -1,0 +1,11 @@
+---
+- name: RKE2 SETUP
+  hosts: all
+  become: yes
+  gather_facts: no
+  roles:
+    # - rke2_installation
+    # - rke2_node_installation
+    # - nginx-ingress-controler
+    - external-dns
+

@@ -1,0 +1,4 @@
+---
+# vars file for rke2_node_installation
+
+rke2_agent_url: https://get.rke2.io
