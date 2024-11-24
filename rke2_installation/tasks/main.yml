@@ -47,7 +47,7 @@
 - name: Récupérer le token pour la connection des neuds depuis le serveur et le stocker en local
   fetch:
     src: /var/lib/rancher/rke2/server/token_new
-    dest: /home/theking/Documents/worketyamo/RKE2_SETUP_ANSIBLE_CODE/rke2_node_installation/templates/config.yaml.j2
+    dest: ./rke2_node_installation/templates/config.yaml.j2
     flat: yes
 
 
