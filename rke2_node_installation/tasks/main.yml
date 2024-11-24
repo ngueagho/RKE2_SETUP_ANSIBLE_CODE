@@ -38,7 +38,7 @@
 - name: Récupération du fichier config.yaml
   # become: true
   template:
-    src: /home/theking/Documents/worketyamo/RKE2_SETUP_ANSIBLE_CODE/rke2_node_installation/templates/config.yaml.j2
+    src: ./rke2_node_installation/templates/config.yaml.j2
     dest: /etc/rancher/rke2/config.yaml
 
 
